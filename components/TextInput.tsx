@@ -24,9 +24,9 @@ const TextInput = ({
   const border = error ? styles.redBorder : {};
   return (
     <View>
-      {labelText && <Text style={[styles.inputLableText, inputLabelStyle]}>{labelText}</Text>}
+      {labelText ? <Text style={[styles.inputLableText, inputLabelStyle]}>{labelText}</Text> : null}
       <Input style={[styles.inputField, inputFieldStyle, border]} {...props} />
-      {error && <Text style={styles.errorText}>{error}</Text>}
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
     </View>
   );
 };

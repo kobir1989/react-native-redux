@@ -4,6 +4,7 @@ import TextInput from '@/components/TextInput';
 import { useLoginMutation, useSignUpMutation } from '@/libs/api/authApi';
 import { ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/redux/authSlice';
 
 const INITIAL_STATE = {
   userName: '',
@@ -21,6 +22,7 @@ const AuthScreen = () => {
   const [signup, { isLoading: signingUp, error: signUpError, isSuccess: isSignUpSuccess }] =
     useSignUpMutation();
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
 
   const handleResetState = () => {
     setInputValues(INITIAL_STATE);
@@ -32,6 +34,12 @@ const AuthScreen = () => {
     }
   }, [isSignUpSuccess]);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace('/');
+    }
+  }, [isAuthenticated]);
+
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
       Alert.alert('Error', 'All fields are required!');
@@ -40,7 +48,6 @@ const AuthScreen = () => {
 
     try {
       await login({ email, password }).unwrap();
-      router.replace('/');
     } catch (error) {
       Alert.alert('Error', 'Login failed. Please try again.');
     }
@@ -147,7 +154,7 @@ const AuthScreen = () => {
         onPress={handleSubmit}
         disabled={logingIn || signingUp}
       >
-        {(signingUp || logingIn) && <ActivityIndicator size='small' color='#fff' />}{' '}
+        <View>{(signingUp || logingIn) && <ActivityIndicator size='small' color='#fff' />} </View>
         <Text style={styles.createAccountButtonText}>Create Account</Text>
       </TouchableOpacity>
 

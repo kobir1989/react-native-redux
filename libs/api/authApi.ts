@@ -1,6 +1,7 @@
 import apiSlice from '@/libs/api/apiSlice';
-import { saveItemToStorage, removeItemFromStorage } from '@/libs/expoSecureStore';
+import { removeItemFromStorage } from '@/libs/expoSecureStore';
 import { User } from '@/@types/auth';
+import { setUser, setIsAuthenticated, setToken, logout } from '@/redux/authSlice';
 
 interface LoginResponse {
   token: string;
@@ -15,11 +16,14 @@ export const authApi = apiSlice.injectEndpoints({
         method: 'POST',
         body: credentials,
       }),
-      async onQueryStarted(_, { queryFulfilled }) {
+      async onQueryStarted(_, { queryFulfilled, dispatch }) {
         try {
           const { data } = await queryFulfilled;
-          await saveItemToStorage('token', data.token);
-          await saveItemToStorage('user', data.userPayload);
+          dispatch(setToken(data.token));
+          dispatch(setUser(data.userPayload));
+          dispatch(setIsAuthenticated(true));
+          // await saveItemToStorage('token', data.token);
+          // await saveItemToStorage('user', data.userPayload);
         } catch (error) {
           await removeItemFromStorage('token');
           await removeItemFromStorage('user');

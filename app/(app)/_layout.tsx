@@ -1,13 +1,20 @@
-import { Stack } from 'expo-router';
+import { Redirect, Stack } from 'expo-router';
 
-import ProtectedRoute from '@/components/ProtectedRoute';
+import { useAuth } from '@/redux/authSlice';
+import { ActivityIndicator } from 'react-native';
 
 const AppLayout = () => {
-  return (
-    <ProtectedRoute>
-      <Stack screenOptions={{ headerShown: false }} />
-    </ProtectedRoute>
-  );
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <ActivityIndicator size='large' color='#0000ff' />;
+  }
+
+  if (!isAuthenticated) {
+    return <Redirect href='/auth' />;
+  }
+
+  return <Stack screenOptions={{ headerShown: false }} />;
 };
 
 export default AppLayout;
